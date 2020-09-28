@@ -62,11 +62,16 @@ func ParseIPs(list string) (map[string]bool, []*net.IPNet, error) {
 func IPWhiteList(whitelist map[string]bool, subnets []*net.IPNet) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ip := c.ClientIP()
-		if !whitelist[ip] && !subnetContainsIP(ip, subnets) {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-				"error": fmt.Sprintf("Client IP %s denied", ip),
-			})
-			return
+		if !whitelist[ip] {
+			allowed := subnetContainsIP(ip, subnets)
+			if !allowed {
+				c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+					"error": fmt.Sprintf("Client IP %s denied", ip),
+				})
+				return
+			}
+
+			whitelist[ip] = true
 		}
 	}
 }
