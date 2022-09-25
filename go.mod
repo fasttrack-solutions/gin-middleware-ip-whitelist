@@ -1,6 +1,6 @@
 module github.com/fasttrack-solutions/gin-middleware-ip-whitelist
 
-go 1.14
+go 1.19
 
 require (
 	github.com/gin-gonic/gin v1.7.0
